@@ -1,3 +1,5 @@
+import os
+
 from google.cloud.universalledger.v1 import (
     transactions_pb2,
     types_pb2,
@@ -8,7 +10,7 @@ from lloyds_ltc_reboot_2026 import helpers
 
 def deploy_kyc_contract(
     creator_account_id: str,
-    contract_path: str = "gculpy/smart.bin",
+    contract_path: str | None = None,
 ):
     """
     Deploy a new KYC smart contract and return its contract_id.
@@ -18,7 +20,41 @@ def deploy_kyc_contract(
         creator_account_id
     )
 
-    with open(contract_path, "rb") as f:
+    # Common locations for the compiled contract
+    possible_paths = [
+        contract_path,
+        "gculpy/smart.bin",
+        "gculpy/our-sc.bin",
+        "smart.bin",
+        "our-sc.bin",
+    ]
+
+    contract_file = None
+
+    for path in possible_paths:
+        if path and os.path.exists(path):
+            contract_file = path
+            break
+
+    if contract_file is None:
+        raise FileNotFoundError(
+            f"""
+Compiled smart contract (.bin) not found.
+
+Looked in:
+{possible_paths}
+
+Current working directory:
+{os.getcwd()}
+
+Files in current directory:
+{os.listdir('.')}
+
+If your contract has not been compiled, compile it first using gculpyc.
+"""
+        )
+
+    with open(contract_file, "rb") as f:
         contract_bytes = f.read()
 
     stub, endpoint = helpers.get_stub_and_endpoint()
@@ -60,7 +96,7 @@ def deploy_kyc_contract(
             break
 
     if contract_id is None:
-        raise RuntimeError("Contract deployment failed.")
+        raise RuntimeError("Contract deployment failed. No contract_id returned.")
 
     return {
         "success": True,
