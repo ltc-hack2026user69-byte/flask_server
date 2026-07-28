@@ -7,6 +7,7 @@ from google.cloud.universalledger.v1 import (
 )
 
 from lloyds_ltc_reboot_2026 import helpers
+from deploy_contract import deploy_kyc_contract
 
 
 def create_ledger_account(
@@ -14,7 +15,9 @@ def create_ledger_account(
     account_manager_kms_key: str,
 ):
     """
-    Creates a Universal Ledger account and returns its details.
+    Creates a Universal Ledger account,
+    deploys a KYC smart contract for that account,
+    and returns both account_id and contract_id.
     """
 
     print("[*] Determining next user account index...")
@@ -54,7 +57,7 @@ def create_ledger_account(
         create_account_transaction=create_account_tx,
     )
 
-    print("[*] Signing transaction using Cloud KMS...")
+    print("[*] Signing CreateAccount transaction using Cloud KMS...")
 
     tx_digest, cert = helpers.sign_and_submit_with_kms(
         stub,
@@ -77,8 +80,11 @@ def create_ledger_account(
             break
 
     if not new_account_id:
-        raise Exception("Unable to obtain created account ID.")
+        raise RuntimeError("Unable to obtain created account ID.")
 
+    print(f"[+] Account Created: {new_account_id}")
+
+    # Save keys locally
     priv_path, pub_path, meta_path = helpers.save_user_account(
         index,
         new_account_id,
@@ -86,8 +92,25 @@ def create_ledger_account(
         public_pem,
     )
 
+    print("[*] Deploying KYC Smart Contract...")
+
+    try:
+        contract = deploy_kyc_contract(
+            creator_account_id=new_account_id
+        )
+
+        contract_id = contract["contract_id"]
+
+        print(f"[+] Contract Created: {contract_id}")
+
+    except Exception as e:
+        print(f"[!] Contract deployment failed: {e}")
+        raise
+
     return {
+        "success": True,
         "account_id": new_account_id,
+        "contract_id": contract_id,
         "transaction_digest": tx_digest,
         "private_key_path": priv_path,
         "public_key_path": pub_path,

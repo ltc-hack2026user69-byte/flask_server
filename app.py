@@ -75,6 +75,7 @@ def verify_kyc():
 
     result = invoke_kyc(
         participant_account_id=data["participant_account_id"],
+        contract_id=data["contract_id"],
         customer_did=data["customer_did"],
         product_type=data["product_type"],
         identity_hash=data["identity_hash"],
