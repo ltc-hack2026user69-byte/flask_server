@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from create_account import create_ledger_account
 from get_account import get_account
@@ -7,6 +8,7 @@ from query_contract import query_contract
 
 import os
 app = Flask(__name__)
+CORS(app)
 
 ACCOUNT_MANAGER_ID = "1:ACT:GBP:425TpAuzy7KUnmbKTW6VHth8UUFRQ9aSq6YuUr5buqEe1"
 
