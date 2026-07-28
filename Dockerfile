@@ -29,7 +29,7 @@ RUN pip install -e .
 RUN pip install flask python-dotenv
 
 # Expose Flask port
-EXPOSE 8001
+EXPOSE 8080
 
 # Start Flask app
 CMD ["python", "app.py"]
