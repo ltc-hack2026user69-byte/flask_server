@@ -5,6 +5,7 @@ from get_account import get_account
 from invoke_contract import invoke_kyc
 from query_contract import query_contract
 
+import os
 app = Flask(__name__)
 
 ACCOUNT_MANAGER_ID = "1:ACT:GBP:425TpAuzy7KUnmbKTW6VHth8UUFRQ9aSq6YuUr5buqEe1"
@@ -96,6 +97,6 @@ def query():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=8001,
-        debug=True,
+        port=int(os.environ.get("PORT", 8080)),
+        debug=False,
     )
