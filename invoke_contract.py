@@ -9,7 +9,6 @@ from lloyds_ltc_reboot_2026 import helpers
 
 def invoke_kyc(
     participant_account_id: str,
-    contract_id: str,
     customer_did: str,
     product_type: str,
     identity_hash: str,
@@ -38,6 +37,7 @@ def invoke_kyc(
     )
 
     # Build invoke transaction
+    contract_id="1:CTR:00443aKgJA2TaQMtJZf4jzhLpULPEb4DEuNfAQEL8WFd8"
     invoke_tx = transactions_pb2.InvokeContractMethod(
         contract_id=contract_id,
         method_name="register_kyc",
