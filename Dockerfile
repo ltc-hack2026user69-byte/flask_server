@@ -26,7 +26,7 @@ RUN pip install --upgrade pip
 RUN pip install -e .
 
 # Install additional dependencies if required
-RUN pip install flask python-dotenv
+RUN pip install flask python-dotenv flask-cors
 
 # Expose Flask port
 EXPOSE 8080
