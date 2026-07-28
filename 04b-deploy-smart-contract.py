@@ -44,8 +44,8 @@ def main() -> None:
     parser.add_argument(
         "--contract-path",
         type=str,
-        default="gculpy/counter.bin",
-        help="Path to the compiled binary contract bytecode (.bin file). Default: gculpy/counter.bin",
+        default="gculpy/our-sc.bin",
+        help="Path to the compiled binary contract bytecode (.bin file). Default: gculpy/our-sc.bin",
     )
     args = parser.parse_args()
 
